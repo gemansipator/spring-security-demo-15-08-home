@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .error-container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .error-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .error-message {
+            font-size: 18px;
+            color: #555;
+        }
+        .error-code {
+            font-size: 24px;
+            color: #e74c3c;
+            margin-top: 20px;
+        }
+        .go-back {
+            margin-top: 30px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .go-back:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <div class="error-title">Oops! Something went wrong.</div>
+    <div class="error-message">We are sorry, but we couldn't process your request at the moment.</div>
+    <div class="error-code">Error: 500 Internal Server Error</div>
+    <a href="/" class="go-back">Go back to Home</a>
+</div>
+</body>
+</html>

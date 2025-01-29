@@ -37,6 +37,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             if (token.isBlank() || token.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Token is empty or not valid");
+                return;
             } else {
                 try {
                     String username = jwtUtil.validateToken(token);

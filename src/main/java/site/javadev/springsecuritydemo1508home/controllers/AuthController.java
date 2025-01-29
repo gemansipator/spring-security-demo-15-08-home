@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import site.javadev.springsecuritydemo1508home.dto.PersonDTO;
@@ -19,7 +20,7 @@ import site.javadev.springsecuritydemo1508home.validation.PersonValidator;
 
 import java.util.Map;
 
-@RestController
+@Controller
 @RequestMapping("/api/v1")
 public class AuthController {
 
@@ -39,13 +40,14 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "auth/login"; // Теперь указывает на auth/login.html
+    }
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody PersonDTO authDTO) {
-
+    public Map<String, String> login(@RequestParam String username, @RequestParam String password) {
         UsernamePasswordAuthenticationToken userToken =
-                new UsernamePasswordAuthenticationToken(
-                        authDTO.getUsername(), authDTO.getPassword()
-                );
+                new UsernamePasswordAuthenticationToken(username, password);
 
         try {
             authenticationManager.authenticate(userToken);
@@ -53,31 +55,40 @@ public class AuthController {
             return Map.of("error", "incorrect login or password");
         }
 
-
-
-        String token = jwtUtil.generateToken(authDTO.getUsername());
-
+        String token = jwtUtil.generateToken(username);
         return Map.of("jwt-token", token);
     }
 
+
+
+    @GetMapping("/registration")
+    public String showRegistrationPage() {
+        return "auth/registration"; // Указывает на templates/auth/registration.html
+    }
+
     @PostMapping("/registration")
-    public Map<String, String> registration(@RequestBody @Valid  PersonDTO personDTO,
+    public Map<String, String> registration(@RequestBody @Valid PersonDTO personDTO,
                                             BindingResult bindingResult) {
+        System.out.println("Полученные данные: " + personDTO);
 
         Person person = peopleService.convertDTOToPerson(personDTO);
+        System.out.println("Сконвертированный объект: " + person);
 
         personValidator.validate(person, bindingResult);
-
         if (bindingResult.hasErrors()) {
+            System.out.println("Ошибки валидации: " + bindingResult.getAllErrors());
             return Map.of("message", "error body");
         }
 
         peopleService.savePerson(person);
+        System.out.println("Человек сохранен в базе");
 
         String token = jwtUtil.generateToken(person.getUsername());
+        System.out.println("Сгенерированный токен: " + token);
 
         return Map.of("jwt-token", token);
     }
+
 
     @GetMapping("/show")
     public String showAuthenticatedUsers() {
