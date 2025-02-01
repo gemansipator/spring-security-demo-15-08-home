@@ -2,7 +2,6 @@ package site.javadev.springsecuritydemo1508home.service;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import site.javadev.springsecuritydemo1508home.dto.PersonDTO;
@@ -39,7 +38,7 @@ public class PeopleService {
         return peopleRepository.findById(id);
     }
 
-    public void updatePerson(Long id, PersonDTO updatedPerson) {
+    public boolean updatePerson(Long id, PersonDTO updatedPerson) {
         peopleRepository.findById(id).ifPresent(person -> {
             person.setUsername(updatedPerson.getUsername());
             person.setEmail(updatedPerson.getEmail());
@@ -49,10 +48,12 @@ public class PeopleService {
             }
             peopleRepository.save(person);
         });
+        return false;
     }
 
-    public void deletePerson(Long id) {
+    public boolean deletePerson(Long id) {
         peopleRepository.deleteById(id);
+        return false;
     }
 
     public Person convertDTOToPerson(PersonDTO personDTO) {
