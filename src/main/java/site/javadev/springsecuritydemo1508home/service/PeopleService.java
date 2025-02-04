@@ -39,20 +39,25 @@ public class PeopleService {
     }
 
     public boolean updatePerson(Long id, PersonDTO updatedPerson) {
-        peopleRepository.findById(id).ifPresent(person -> {
-            person.setUsername(updatedPerson.getUsername());
-            person.setEmail(updatedPerson.getEmail());
-            person.setYearOfBirth(updatedPerson.getYearOfBirth());
-            if (!updatedPerson.getPassword().isEmpty()) {
-                person.setPassword(passwordEncoder.encode(updatedPerson.getPassword()));
-            }
-            peopleRepository.save(person);
-        });
-        return false;
+        return peopleRepository.findById(id)
+                .map(person -> {
+                    person.setUsername(updatedPerson.getUsername());
+                    person.setEmail(updatedPerson.getEmail());
+                    person.setYearOfBirth(updatedPerson.getYearOfBirth());
+                    if (!updatedPerson.getPassword().isEmpty()) {
+                        person.setPassword(passwordEncoder.encode(updatedPerson.getPassword()));
+                    }
+                    peopleRepository.save(person);
+                    return true;
+                })
+                .orElse(false);
     }
 
     public boolean deletePerson(Long id) {
-        peopleRepository.deleteById(id);
+        if (peopleRepository.existsById(id)) {
+            peopleRepository.deleteById(id);
+            return true;
+        }
         return false;
     }
 
@@ -62,5 +67,12 @@ public class PeopleService {
 
     public PersonDTO convertPersonToDTO(Person person) {
         return modelMapper.map(person, PersonDTO.class);
+    }
+
+    // Новый метод для регистрации, который принимает DTO, преобразует в сущность и сохраняет
+    public Person registerPerson(PersonDTO personDTO) {
+        Person person = convertDTOToPerson(personDTO);
+        savePerson(person);
+        return person;
     }
 }

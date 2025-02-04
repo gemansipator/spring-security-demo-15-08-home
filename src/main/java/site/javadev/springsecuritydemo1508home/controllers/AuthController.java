@@ -1,7 +1,7 @@
 package site.javadev.springsecuritydemo1508home.controllers;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,18 +20,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor // Lombok автоматически генерирует конструктор для финальных полей
 public class AuthController {
 
     private final PeopleService peopleService;
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
-
-    @Autowired
-    public AuthController(PeopleService peopleService, JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
-        this.peopleService = peopleService;
-        this.jwtUtil = jwtUtil;
-        this.authenticationManager = authenticationManager;
-    }
 
     /**
      * Обработчик запроса на вход пользователя.
@@ -76,9 +70,8 @@ public class AuthController {
                     .body(Map.of("error", "User already exists"));
         }
 
-        // Преобразуем DTO в сущность Person и сохраняем в базе
-        Person person = peopleService.convertDTOToPerson(personDTO);
-        peopleService.savePerson(person);
+        // Передаем DTO в сервис, который преобразует его в Person и сохраняет
+        Person person = peopleService.registerPerson(personDTO);
 
         // Генерируем JWT-токен для нового пользователя
         String token = jwtUtil.generateToken(person.getUsername());
